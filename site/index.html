@@ -1,0 +1,1179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ShiftStack — Track every shift. Keep every dollar.</title>
+  <meta name="description" content="ShiftStack is the earnings tracker built for servers, baristas, and anyone who hustles across multiple jobs. Log your tips in seconds." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Tokens ─── */
+    :root {
+      --bg:           #F7F5F0;
+      --surface:      #FFFFFF;
+      --border:       #E8E4DE;
+      --text:         #1A1A1A;
+      --text-2:       #6B6B6B;
+      --text-3:       #A8A39A;
+      --terracotta:   #C96442;
+      --terracotta-2: #B0512F;
+      --terracotta-soft: rgba(201,100,66,0.10);
+      --green:        #22C55E;
+      --green-soft:   rgba(34,197,94,0.14);
+      --ink:          #14110E;
+      --font:         'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+      --r:            16px;
+      --r-lg:         24px;
+      --r-xl:         36px;
+      --container:    1200px;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    ul { margin: 0; padding: 0; list-style: none; }
+
+    .container {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ─── Eyebrow ─── */
+    .eyebrow {
+      font-size: 11.5px; font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--terracotta);
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 18px; height: 1.5px;
+      background: currentColor;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .eyebrow.light { color: #E8C9B8; }
+    .eyebrow.light::before { background: #E8C9B8; }
+
+    /* ─── Type scale ─── */
+    .t-display {
+      font-size: clamp(36px, 5.5vw, 72px);
+      font-weight: 800;
+      line-height: 0.97;
+      letter-spacing: -0.035em;
+      color: var(--text);
+      margin: 0;
+    }
+    .t-h2 {
+      font-size: clamp(28px, 3.6vw, 48px);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.028em;
+      color: var(--text);
+      margin: 0;
+    }
+    .t-lead {
+      font-size: clamp(16px, 1.3vw, 19px);
+      line-height: 1.55;
+      color: var(--text-2);
+      margin: 0;
+    }
+    .t-body { font-size: 16px; line-height: 1.6; color: var(--text-2); }
+
+    /* ─── Buttons ─── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      height: 52px; padding: 0 24px;
+      border-radius: 999px;
+      font-family: var(--font);
+      font-size: 15px; font-weight: 600;
+      letter-spacing: -0.01em;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background .15s, transform .1s, border-color .15s;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary { background: var(--terracotta); color: #fff; }
+    .btn-primary:hover { background: var(--terracotta-2); }
+    .btn-ghost { background: transparent; color: var(--text); border-color: var(--border); }
+    .btn-ghost:hover { background: var(--surface); }
+    .btn-dark { background: var(--ink); color: #fff; }
+    .btn-dark:hover { background: #000; }
+    .btn-sm { height: 40px; padding: 0 16px; font-size: 14px; }
+    .btn-store {
+      display: inline-flex; align-items: center; gap: 10px;
+      height: 48px; padding: 0 18px;
+      background: var(--ink); color: #fff;
+      border-radius: 12px;
+      font-family: var(--font);
+      cursor: pointer; border: none;
+      transition: background .15s;
+    }
+    .btn-store:hover { background: #000; }
+    .btn-store .store-label { display: flex; flex-direction: column; gap: 1px; }
+    .btn-store .store-label span:first-child { font-size: 10px; font-weight: 500; opacity: 0.7; line-height: 1; }
+    .btn-store .store-label span:last-child  { font-size: 15px; font-weight: 700; line-height: 1; }
+
+    /* ─── Pill badge ─── */
+    .pill {
+      display: inline-flex; align-items: center; gap: 7px;
+      height: 30px; padding: 0 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 12.5px; font-weight: 600;
+      color: var(--text);
+    }
+    .pill .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 3px rgba(34,197,94,0.18);
+    }
+
+    /* ─── NAV ─── */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      backdrop-filter: saturate(180%) blur(14px);
+      -webkit-backdrop-filter: saturate(180%) blur(14px);
+      background: rgba(247,245,240,0.82);
+      border-bottom: 1px solid rgba(232,228,222,0.7);
+    }
+    .nav-inner {
+      height: 68px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .brand {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: 18px; font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+    .brand-mark {
+      width: 30px; height: 30px;
+      border-radius: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      display: inline-flex; align-items: center; justify-content: center;
+      color: var(--terracotta);
+      font-weight: 900; font-size: 14px;
+      letter-spacing: -0.08em;
+    }
+    .nav-links {
+      display: flex; align-items: center; gap: 28px;
+    }
+    .nav-links a {
+      font-size: 14.5px; font-weight: 500;
+      color: var(--text-2);
+      letter-spacing: -0.005em;
+      transition: color .15s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta { display: flex; align-items: center; gap: 10px; }
+
+    @media (max-width: 800px) {
+      .nav-links { display: none; }
+    }
+    @media (max-width: 480px) {
+      .nav-cta .btn-ghost { display: none; }
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      padding: 64px 0 0;
+      overflow: visible;
+    }
+    .hero-copy {
+      max-width: 700px;
+      margin: 0 auto;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+    .hero-copy h1 { margin: 20px 0 20px; }
+    .hero-copy .t-lead { max-width: 52ch; }
+    .hero-cta {
+      display: flex; align-items: center; justify-content: center;
+      gap: 14px; margin-top: 32px; flex-wrap: wrap;
+    }
+    .hero-subtitle {
+      margin-top: 18px;
+      font-size: 14px;
+      color: var(--text-3);
+      font-weight: 500;
+    }
+
+    /* ─── Phone mockup ─── */
+    .phone {
+      position: relative;
+      border-radius: 44px;
+      background: #111;
+      padding: 10px;
+      box-shadow:
+        0 2px 4px rgba(0,0,0,0.08),
+        0 20px 50px -15px rgba(20,17,14,0.30),
+        0 40px 80px -25px rgba(20,17,14,0.18);
+    }
+    /* Dynamic Island */
+    .phone::before {
+      content: "";
+      position: absolute;
+      top: 18px; left: 50%;
+      transform: translateX(-50%);
+      width: 88px; height: 26px;
+      border-radius: 99px;
+      background: #000;
+      z-index: 5;
+    }
+    .phone-screen {
+      border-radius: 36px;
+      overflow: hidden;
+      background: var(--bg);
+      width: 100%;
+      aspect-ratio: 9 / 19.5;
+      position: relative;
+    }
+    .phone-screen-img {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: top center;
+      width: 100%; height: 100%;
+    }
+
+    /* ─── Hero phones ─── */
+    .hero-phones {
+      margin-top: 56px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 20px;
+      padding-bottom: 0;
+    }
+    .hero-phones .phone { width: 260px; flex-shrink: 0; }
+
+    /* Left phone: subtle left tilt, no vertical offset */
+    .hero-phones .phone:nth-child(1) {
+      transform: rotate(-3deg);
+      margin-top: 20px;
+    }
+    /* Center phone: straight, slightly larger, elevated */
+    .hero-phones .phone:nth-child(2) {
+      transform: scale(1.05);
+      z-index: 2;
+      margin-top: 0;
+    }
+    /* Right phone: subtle right tilt, no vertical offset */
+    .hero-phones .phone:nth-child(3) {
+      transform: rotate(3deg);
+      margin-top: 20px;
+    }
+
+    /* Push screenshot content down to clear Dynamic Island */
+    .hero-phones .phone-screen-img {
+      background-position: top center;
+      margin-top: 44px;
+      height: calc(100% - 44px);
+    }
+
+    @media (max-width: 1000px) {
+      .hero-phones { transform: scale(0.88); transform-origin: top center; margin-top: 40px; }
+    }
+    @media (max-width: 760px) {
+      .hero-phones .phone:nth-child(1),
+      .hero-phones .phone:nth-child(3) { display: none; }
+      .hero-phones .phone:nth-child(2) { transform: none; }
+      .hero-phones { margin-top: 40px; }
+    }
+
+    /* ─── STATS ─── */
+    .stats {
+      padding: 64px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      margin-top: 40px;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+    .stat-num {
+      font-size: clamp(36px, 4vw, 52px);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+    .stat-num .accent { color: var(--terracotta); }
+    .stat-label {
+      margin-top: 10px;
+      font-size: 13.5px;
+      color: var(--text-2);
+      line-height: 1.45;
+      max-width: 24ch;
+    }
+    @media (max-width: 760px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 28px 20px; }
+    }
+
+    /* ─── Section blocks ─── */
+    .block { padding: 112px 0; }
+    .block.tight { padding: 80px 0; }
+    .section-head { max-width: 680px; margin-bottom: 56px; }
+    .section-head h2 { margin-top: 16px; }
+    .section-head p { margin-top: 16px; }
+    .section-head.center { margin-left: auto; margin-right: auto; text-align: center; }
+    .section-head.center .eyebrow { justify-content: center; }
+    .section-head.center p { margin-left: auto; margin-right: auto; }
+
+    /* ─── Feature row (phone + copy) ─── */
+    .feature-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 72px;
+      align-items: center;
+    }
+    .feature-row.rev .feature-art { order: 2; }
+    .feature-art {
+      position: relative;
+      display: flex; justify-content: center;
+    }
+    .feature-art .phone { width: 300px; }
+    .feature-tile {
+      position: absolute;
+      inset: 6% -8% 4% -8%;
+      border-radius: var(--r-xl);
+      z-index: 0;
+    }
+    .feature-tile.warm { background: linear-gradient(155deg, #FFF8EE 0%, #FAE8D4 100%); }
+    .feature-tile.clay { background: linear-gradient(155deg, #FCE9DC 0%, #F0CDB1 100%); }
+    .feature-tile.sage { background: linear-gradient(155deg, #EFF6EF 0%, #DDECD5 100%); }
+    .feature-art .phone { position: relative; z-index: 1; }
+
+    .feature-copy h2 { margin-top: 16px; }
+    .feature-copy p { margin-top: 16px; }
+
+    .bullets {
+      margin: 24px 0 0;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .bullets li {
+      display: flex; gap: 12px;
+      font-size: 15px; color: var(--text-2);
+      line-height: 1.5; align-items: flex-start;
+    }
+    .check {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--green); color: #fff;
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .bullets strong { color: var(--text); font-weight: 600; }
+
+    .feature-stat {
+      margin-top: 28px;
+      display: inline-flex; align-items: baseline; gap: 12px;
+      padding: 14px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+    }
+    .feature-stat .fs-num {
+      font-size: 30px; font-weight: 700;
+      color: var(--terracotta);
+      letter-spacing: -0.025em;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+    .feature-stat .fs-lab { font-size: 13px; color: var(--text-2); }
+
+    @media (max-width: 880px) {
+      .feature-row { grid-template-columns: 1fr; gap: 40px; }
+      .feature-row.rev .feature-art { order: 0; }
+      .feature-art .phone { width: 280px; }
+    }
+
+    /* ─── HOW IT WORKS ─── */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: 32px;
+      position: relative;
+    }
+    .step-num {
+      font-size: 64px; font-weight: 800;
+      color: var(--terracotta);
+      letter-spacing: -0.06em;
+      line-height: 0.9;
+      opacity: 0.20;
+      position: absolute; top: 20px; right: 24px;
+    }
+    .step-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: var(--terracotta-soft);
+      display: inline-flex; align-items: center; justify-content: center;
+      color: var(--terracotta);
+      margin-bottom: 18px;
+    }
+    .step.green .step-icon { background: var(--green-soft); color: var(--green); }
+    .step.dark  .step-icon { background: #ECEAE4; color: var(--text); }
+    .step h4 {
+      font-size: 20px; font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0 0 10px;
+    }
+    .step p { margin: 0; font-size: 15px; line-height: 1.55; color: var(--text-2); }
+
+    @media (max-width: 880px) {
+      .steps { grid-template-columns: 1fr; }
+    }
+
+    /* ─── FEATURE GRID ─── */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .fc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 22px;
+      display: flex; flex-direction: column; gap: 10px;
+      min-height: 160px;
+      transition: transform .15s, border-color .15s;
+    }
+    .fc:hover { transform: translateY(-2px); border-color: #D6CFC2; }
+    .fc-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      display: inline-flex; align-items: center; justify-content: center;
+      color: var(--text);
+      flex-shrink: 0;
+    }
+    .fc h5 {
+      font-size: 15.5px; font-weight: 700;
+      letter-spacing: -0.015em;
+      color: var(--text);
+      margin: 0;
+    }
+    .fc p { font-size: 13.5px; line-height: 1.45; color: var(--text-2); margin: 0; }
+
+    .fc.accent { background: var(--terracotta); border-color: transparent; }
+    .fc.accent h5, .fc.accent p { color: rgba(255,255,255,0.9); }
+    .fc.accent .fc-icon { background: rgba(255,255,255,0.18); border-color: transparent; color: #fff; }
+
+    .fc.dark { background: var(--ink); border-color: transparent; }
+    .fc.dark h5 { color: #fff; }
+    .fc.dark p  { color: rgba(255,255,255,0.65); }
+    .fc.dark .fc-icon { background: rgba(255,255,255,0.08); border-color: transparent; color: #fff; }
+
+    @media (max-width: 1080px) { .feature-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 700px)  { .feature-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px)  { .feature-grid { grid-template-columns: 1fr; } }
+
+    /* ─── INSIGHTS DEEP DIVE ─── */
+    .insights-dark {
+      background: var(--ink); color: #fff;
+    }
+    .insights-dark .t-h2 { color: #fff; }
+    .insights-dark .t-body { color: rgba(255,255,255,0.65); }
+    .metrics {
+      margin-top: 36px;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 14px; max-width: 420px;
+    }
+    .metric {
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: var(--r);
+      padding: 18px;
+    }
+    .metric-num {
+      font-size: 28px; font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.025em;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+    .metric-num .unit { font-size: 15px; color: rgba(255,255,255,0.45); font-weight: 600; }
+    .metric-num.green { color: var(--green); }
+    .metric-label {
+      font-size: 11.5px; color: rgba(255,255,255,0.5);
+      text-transform: uppercase; letter-spacing: 0.1em;
+      font-weight: 700; margin-top: 6px;
+    }
+
+    /* ─── QUOTE ─── */
+    .quote-band {
+      padding: 100px 0;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: radial-gradient(700px circle at 50% 100%, rgba(201,100,66,0.08), transparent 65%);
+    }
+    .quote-band blockquote {
+      font-size: clamp(26px, 3.2vw, 42px);
+      font-weight: 700;
+      line-height: 1.18;
+      letter-spacing: -0.025em;
+      color: var(--text);
+      margin: 0 auto;
+      max-width: 22ch;
+    }
+    .quote-by {
+      margin-top: 32px;
+      display: inline-flex; align-items: center; gap: 12px;
+      font-size: 14px; color: var(--text-2);
+    }
+    .quote-av {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, #C96442, #E5B886);
+      display: inline-flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    /* ─── DOWNLOAD CTA ─── */
+    .cta-wrap { padding: 0 24px; }
+    .cta-band {
+      background: var(--ink);
+      color: #fff;
+      border-radius: 36px;
+      padding: 80px 64px;
+      margin: 96px auto;
+      max-width: var(--container);
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 56px;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-band::before {
+      content: "";
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(600px circle at 0% 100%, rgba(201,100,66,0.22), transparent 60%),
+        radial-gradient(500px circle at 100% 0%,  rgba(34,197,94,0.08), transparent 60%);
+      pointer-events: none;
+    }
+    .cta-copy { position: relative; }
+    .cta-copy h2 {
+      font-size: clamp(32px, 4vw, 52px);
+      font-weight: 700; line-height: 1.04;
+      letter-spacing: -0.028em;
+      color: #fff;
+      margin: 18px 0 22px;
+    }
+    .cta-copy p { color: rgba(255,255,255,0.65); font-size: 17px; line-height: 1.55; max-width: 44ch; margin: 0; }
+    .cta-actions { display: flex; gap: 12px; margin-top: 34px; flex-wrap: wrap; }
+    .cta-actions .btn-light { background: #fff; color: var(--ink); border-radius: 999px; height: 52px; padding: 0 24px; font-size: 15px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+    .cta-actions .btn-light:hover { background: #F0EEE9; }
+    .cta-art { position: relative; display: flex; justify-content: center; }
+    .cta-art .phone { width: 240px; transform: rotate(-6deg); }
+
+    @media (max-width: 880px) {
+      .cta-band { grid-template-columns: 1fr; padding: 52px 28px; margin: 60px 16px; border-radius: 24px; }
+      .cta-art { display: none; }
+    }
+
+    /* ─── FOOTER ─── */
+    .foot {
+      padding: 56px 0 60px;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .foot-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid var(--border);
+    }
+    .foot-tagline { font-size: 14px; color: var(--text-2); margin: 12px 0 0; max-width: 32ch; line-height: 1.5; }
+    .foot-stores { margin-top: 18px; }
+    .foot-grid h6 {
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.18em;
+      color: var(--text-3);
+      margin: 0 0 14px;
+    }
+    .foot-grid ul { display: flex; flex-direction: column; gap: 10px; }
+    .foot-grid ul a { font-size: 14px; color: var(--text-2); transition: color .15s; }
+    .foot-grid ul a:hover { color: var(--text); }
+    .foot-bottom {
+      padding-top: 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 13px; color: var(--text-3);
+    }
+    @media (max-width: 760px) {
+      .foot-grid { grid-template-columns: 1fr 1fr; }
+      .foot-bottom { flex-direction: column; gap: 10px; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════ NAV ══════════════════ -->
+<header class="nav">
+  <div class="container nav-inner">
+    <a class="brand" href="#">
+      <span class="brand-mark">SS</span>
+      ShiftStack
+    </a>
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#insights">Insights</a>
+      <a href="#grid">All features</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn btn-sm btn-ghost" href="#">Sign in</a>
+      <a class="btn btn-sm btn-primary" href="#">Get the app</a>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════ HERO ══════════════════ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-copy">
+      <span class="pill"><span class="dot"></span> Now on iOS</span>
+      <h1 class="t-display">
+        Track every shift.<br />
+        Keep every <span style="color:var(--terracotta)">dollar</span>.
+      </h1>
+      <p class="t-lead">
+        ShiftStack is the cash-tip tracker built for servers, baristas, line cooks,
+        and gig workers who get paid the messy way.
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#">
+          <svg width="16" height="16" viewBox="0 0 20 24" fill="currentColor" aria-hidden="true">
+            <path d="M16.365 12.51c-.026-2.685 2.193-3.974 2.293-4.038-1.249-1.825-3.193-2.075-3.882-2.105-1.654-.167-3.227.973-4.067.973-.84 0-2.13-.948-3.5-.922-1.8.027-3.46 1.046-4.385 2.657-1.87 3.243-.477 8.043 1.347 10.677.89 1.292 1.95 2.741 3.34 2.689 1.34-.054 1.846-.866 3.466-.866 1.62 0 2.075.866 3.49.84 1.44-.027 2.355-1.317 3.236-2.614 1.02-1.5 1.44-2.955 1.466-3.03-.033-.014-2.81-1.078-2.836-4.261zM13.673 4.74c.74-.9 1.24-2.148 1.103-3.39-1.067.044-2.36.71-3.124 1.608-.685.795-1.286 2.068-1.124 3.286 1.19.092 2.407-.604 3.145-1.504z"/>
+          </svg>
+          Download free
+        </a>
+        <a class="btn btn-ghost" href="#how">See how it works</a>
+      </div>
+      <p class="hero-subtitle">Built for servers, baristas, and gig workers</p>
+    </div>
+
+    <!-- Three phone mockups -->
+    <div class="hero-phones">
+      <!-- Left phone: Log Shift -->
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="phone-screen-img" style="background-image:url('assets/screen-log.png')"></div>
+        </div>
+      </div>
+      <!-- Center phone: Home Dashboard -->
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="phone-screen-img" style="background-image:url('assets/screen-home.png')"></div>
+        </div>
+      </div>
+      <!-- Right phone: Insights -->
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="phone-screen-img" style="background-image:url('assets/screen-insights-1.png')"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ STATS ══════════════════ -->
+<section class="stats">
+  <div class="container">
+    <div class="stats-grid">
+      <div>
+        <div class="stat-num">$<span class="accent">142M</span></div>
+        <p class="stat-label">in shift earnings tracked, this year alone.</p>
+      </div>
+      <div>
+        <div class="stat-num">38<span style="font-size:.55em;font-weight:700">%</span></div>
+        <p class="stat-label">more cash tips remembered after switching from paper.</p>
+      </div>
+      <div>
+        <div class="stat-num">12<span style="font-size:.55em;font-weight:700">s</span></div>
+        <p class="stat-label">average time to log a shift, end-of-night.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ FEATURE: HOME ══════════════════ -->
+<section class="block" id="features">
+  <div class="container">
+    <div class="feature-row">
+      <div class="feature-art">
+        <div class="feature-tile warm"></div>
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="phone-screen-img" style="background-image:url('assets/screen-home.png')"></div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-copy">
+        <span class="eyebrow">Your week, at a glance</span>
+        <h2 class="t-h2">Every dollar you earned — cash, card, wage — in one honest number.</h2>
+        <p class="t-body">
+          The home screen opens to this week's take-home, broken down the way
+          you actually get paid. No calorie-counting your tips. No spreadsheet shame.
+        </p>
+        <ul class="bullets">
+          <li>
+            <span class="check"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.5L5 9.5l5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span><strong>Cash, card, wages</strong> rolled into one number — same as your bank sees it Monday morning.</span>
+          </li>
+          <li>
+            <span class="check"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.5L5 9.5l5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span><strong>Weekly goal ring</strong> tells you which Saturday shift you can actually skip.</span>
+          </li>
+          <li>
+            <span class="check"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.5L5 9.5l5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span><strong>Recent shifts</strong> across every job — Blue Bottle, Taco Stand, catering all in one view.</span>
+          </li>
+        </ul>
+        <div class="feature-stat">
+          <span class="fs-num">$1,284</span>
+          <span class="fs-lab">average week for a ShiftStack user, 90 days in</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ FEATURE: LOG ══════════════════ -->
+<section class="block tight" style="background:linear-gradient(180deg,transparent 0%,rgba(201,100,66,0.04) 50%,transparent 100%)">
+  <div class="container">
+    <div class="feature-row rev">
+      <div class="feature-art">
+        <div class="feature-tile clay"></div>
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="phone-screen-img" style="background-image:url('assets/screen-log.png')"></div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-copy">
+        <span class="eyebrow">Log it before you lose it</span>
+        <h2 class="t-h2">Cash slips your mind in 90 minutes. Not on our watch.</h2>
+        <p class="t-body">
+          One tap from the home screen opens a sheet built for the parking lot, the bus
+          stop, the 11:47 PM ride home. Big input. Fat fingers welcome. Three numbers and a save.
+        </p>
+        <ul class="bullets">
+          <li>
+            <span class="check"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.5L5 9.5l5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span><strong>Cash tips first.</strong> The most-forgettable field is the biggest one on the screen.</span>
+          </li>
+          <li>
+            <span class="check"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.5L5 9.5l5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span><strong>Smart defaults.</strong> Picks your most-recent job, typical wage, and last shift length.</span>
+          </li>
+          <li>
+            <span class="check"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.5L5 9.5l5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span><strong>10 PM reminder.</strong> A gentle push when your shift usually ends — snooze or log from the lock screen.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ FEATURE: INSIGHTS ══════════════════ -->
+<section class="block" id="insights">
+  <div class="container">
+    <div class="feature-row">
+      <div class="feature-art">
+        <div class="feature-tile sage"></div>
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="phone-screen-img" style="background-image:url('assets/screen-insights-1.png')"></div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-copy">
+        <span class="eyebrow">Patterns, not paperwork</span>
+        <h2 class="t-h2">Find your Friday. Then double it.</h2>
+        <p class="t-body">
+          Insights pulls the truth from your last 7, 30, or 90 days — which day pays best,
+          which job tips highest, whether your cash-vs-card split is shifting.
+        </p>
+        <ul class="bullets">
+          <li>
+            <span class="check"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.5L5 9.5l5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span><strong>True hourly rate</strong> — wages plus tips divided by hours. The only fair comparison across jobs.</span>
+          </li>
+          <li>
+            <span class="check"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.5L5 9.5l5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span><strong>Tip-rate trend</strong> — this week against last week, with the peak day called out.</span>
+          </li>
+          <li>
+            <span class="check"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.5L5 9.5l5-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span><strong>Cash vs card split</strong> with a friendly nudge: "Most cash tips on Fridays."</span>
+          </li>
+        </ul>
+        <div class="feature-stat">
+          <span class="fs-num">+18%</span>
+          <span class="fs-lab">avg lift in tip rate after 90 days of tracking</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ HOW IT WORKS ══════════════════ -->
+<section class="block tight" id="how" style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="container">
+    <div class="section-head center">
+      <span class="eyebrow">How it works</span>
+      <h2 class="t-h2">Three taps, a real number, every shift.</h2>
+      <p class="t-lead">Built around the actual moment you remember to log — usually at a stoplight, usually with one hand.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">01</span>
+        <div class="step-icon">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+            <path d="M11 4v14M4 11h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h4>Add your jobs</h4>
+        <p>One name, one base wage. Add as many gigs as you stack — Blue Bottle Monday, Catering Wednesday, Farmers Market Saturday — they all roll up to one weekly number.</p>
+      </div>
+      <div class="step green">
+        <span class="step-num">02</span>
+        <div class="step-icon">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+            <rect x="3" y="5" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M3 10h16M7 3v4M15 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h4>Log a shift, fast</h4>
+        <p>Cash tips, card tips, hours. Twelve seconds, end-of-night. The big input is the one people forget — that's by design.</p>
+      </div>
+      <div class="step dark">
+        <span class="step-num">03</span>
+        <div class="step-icon">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+            <rect x="3.5" y="13" width="3.6" height="8" rx="1" stroke="currentColor" stroke-width="1.8"/>
+            <rect x="10.2" y="8" width="3.6" height="13" rx="1" stroke="currentColor" stroke-width="1.8"/>
+            <rect x="16.9" y="3.5" width="3.6" height="17.5" rx="1" stroke="currentColor" stroke-width="1.8"/>
+          </svg>
+        </div>
+        <h4>Watch the pattern</h4>
+        <p>After two weeks, ShiftStack tells you which job pays best, which shift to never miss, and how close you are to next month's rent.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ FEATURE GRID ══════════════════ -->
+<section class="block" id="grid">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Built for the way you actually work</span>
+      <h2 class="t-h2">Everything in one app, nothing you don't need.</h2>
+    </div>
+    <div class="feature-grid">
+      <div class="fc">
+        <span class="fc-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2.5v15M5 7.5h7a2.5 2.5 0 0 1 0 5H7a2.5 2.5 0 0 0 0 5h7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </span>
+        <h5>Cash + card tips, separately</h5>
+        <p>The split that matters for your rent, your savings, and your sanity.</p>
+      </div>
+      <div class="fc accent">
+        <span class="fc-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 10l4-4 3 3 5-5M11 4h4v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <h5>True hourly rate</h5>
+        <p>Wages + tips divided by hours. The only number that lets you compare two jobs fairly.</p>
+      </div>
+      <div class="fc">
+        <span class="fc-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 8h14M7 2.5v3M13 2.5v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </span>
+        <h5>Calendar heatmap</h5>
+        <p>See your whole month at a glance. Green is good. Dark green is your best day.</p>
+      </div>
+      <div class="fc">
+        <span class="fc-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 14V8.5a4 4 0 1 1 8 0V14l1 1.5H3L4 14z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M7 17a1.5 1.5 0 0 0 3 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </span>
+        <h5>Smart 10 PM reminder</h5>
+        <p>A nudge timed to your usual end-of-shift — learns the rhythm, stays out of your way.</p>
+      </div>
+      <div class="fc">
+        <span class="fc-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.6"/><path d="M10 3v7l5 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </span>
+        <h5>Weekly goal tracker</h5>
+        <p>Set rent plus groceries plus a little extra. ShiftStack tells you when you can stop.</p>
+      </div>
+      <div class="fc">
+        <span class="fc-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="5" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="10.5" r="2.2" stroke="currentColor" stroke-width="1.6"/></svg>
+        </span>
+        <h5>Spending tracker</h5>
+        <p>Cash spent matters too. Log it in three taps, see where it went each month.</p>
+      </div>
+      <div class="fc dark">
+        <span class="fc-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="4" y="3.5" width="12" height="13" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M7 7h6M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </span>
+        <h5>Export CSV</h5>
+        <p>Download all your earnings as a spreadsheet anytime.</p>
+      </div>
+      <div class="fc">
+        <span class="fc-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3.5" y="9" width="13" height="8" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M6.5 9V6.5a3.5 3.5 0 0 1 7 0V9" stroke="currentColor" stroke-width="1.6"/></svg>
+        </span>
+        <h5>Private by design</h5>
+        <p>Stored on your device. No employer hooks, no payroll integrations, no ad pixels.</p>
+      </div>
+      <div class="fc">
+        <span class="fc-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 11l3.5-3.5L9 10l5.5-5.5M10 4.5h4.5V9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <h5>Tip-rate trends</h5>
+        <p>See this week vs last. Peak day called out. Slow weeks explained.</p>
+      </div>
+      <div class="fc">
+        <span class="fc-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3l2.3 4.6L17 8.4l-3.5 3.4.8 4.7L10 14.3l-4.3 2.2.8-4.7L3 8.4l4.7-.8L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </span>
+        <h5>Best-shift highlights</h5>
+        <p>"Friday was your best day this week." Small wins make the next shift easier.</p>
+      </div>
+      <div class="fc">
+        <span class="fc-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><circle cx="13" cy="10" r="1.4" fill="currentColor"/></svg>
+        </span>
+        <h5>Multiple jobs</h5>
+        <p>Track every gig you stack — barista, banquet, dog-walking — under one roof.</p>
+      </div>
+      <div class="fc">
+        <span class="fc-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10c2.5-2 5-2 6 0s3.5 2 6 0M4 6c2.5-2 5-2 6 0s3.5 2 6 0M4 14c2.5-2 5-2 6 0s3.5 2 6 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </span>
+        <h5>iCloud sync</h5>
+        <p>Phone breaks, lose your job, switch devices — your history stays with you.</p>
+      </div>
+      <div class="fc">
+        <span class="fc-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 13v-2a3 3 0 0 0-3-3H4M10 13l-2 2m2-2l2 2M14 8h2a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <h5>Offline-first</h5>
+        <p>No signal in the parking garage? Log anyway. It syncs when you get bars.</p>
+      </div>
+      <div class="fc">
+        <span class="fc-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3.5 10A6.5 6.5 0 1 1 10 16.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M3.5 13V10H6.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <h5>Shift history</h5>
+        <p>Every shift, every job, going back as far as you log. Searchable. Sortable.</p>
+      </div>
+      <div class="fc">
+        <span class="fc-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 4v8M6 9l4 4 4-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15h12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </span>
+        <h5>One-tap save</h5>
+        <p>Big terracotta button at the bottom. Hard to miss even after a double shift.</p>
+      </div>
+      <div class="fc">
+        <span class="fc-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.6"/><path d="M10 7v3.5l2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <h5>Hours tracker</h5>
+        <p>Plus and minus controls so you never mistype 8 hours as 80.</p>
+      </div>
+      <div class="fc">
+        <span class="fc-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 5h12M4 10h8M4 15h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </span>
+        <h5>Job notes</h5>
+        <p>Pin a note to any job — "always cash out register at close" — so nothing slips.</p>
+      </div>
+      <div class="fc">
+        <span class="fc-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 17A7 7 0 1 0 10 3a7 7 0 0 0 0 14zM10 10h.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M10 7v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </span>
+        <h5>Free forever</h5>
+        <p>One job, always free. No trial, no expiry, no credit card.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ INSIGHTS DEEP DIVE ══════════════════ -->
+<section class="block tight insights-dark" id="insights-deep">
+  <div class="container">
+    <div class="feature-row" style="gap:64px">
+      <div class="feature-copy">
+        <span class="eyebrow light">Built on a real chart engine</span>
+        <h2 class="t-h2" style="color:#fff;margin-top:16px">Numbers you can actually read in the parking lot.</h2>
+        <p class="t-body" style="color:rgba(255,255,255,0.65);margin-top:16px">
+          Every chart is sized for a one-handed glance. Real Y-axes, honest grid lines,
+          no rainbow gradients. The peak day glows terracotta. The off day is a gray stub,
+          not a missing bar.
+        </p>
+        <div class="metrics">
+          <div class="metric">
+            <div class="metric-num">$18.40<span class="unit">/hr</span></div>
+            <div class="metric-label">True hourly · 30 days</div>
+          </div>
+          <div class="metric">
+            <div class="metric-num green">21.4<span class="unit">%</span></div>
+            <div class="metric-label">Avg tip rate</div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-art">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="phone-screen-img" style="background-image:url('assets/screen-insights-2.png')"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ QUOTE ══════════════════ -->
+<section class="quote-band">
+  <div class="container">
+    <blockquote>
+      "I logged a year of catering shifts and finally figured out
+      <span style="color:var(--terracotta)">Tuesdays weren't worth it.</span>"
+    </blockquote>
+    <div class="quote-by">
+      <span class="quote-av">RJ</span>
+      <span><strong>Rosa Jimenez</strong> · server and line cook, Oakland · ShiftStack for 11 months</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ DOWNLOAD CTA ══════════════════ -->
+<div class="cta-wrap">
+  <section class="cta-band">
+    <div class="cta-copy">
+      <span class="eyebrow light">Free forever for the first job</span>
+      <h2>Your next shift is in three hours. Get the app before then.</h2>
+      <p>One tap to install. Twelve seconds to log a shift. A year from now, you'll know which job to quit.</p>
+      <div class="cta-actions">
+        <a class="btn-light" href="#">
+          <svg width="18" height="18" viewBox="0 0 20 24" fill="currentColor" aria-hidden="true">
+            <path d="M16.365 12.51c-.026-2.685 2.193-3.974 2.293-4.038-1.249-1.825-3.193-2.075-3.882-2.105-1.654-.167-3.227.973-4.067.973-.84 0-2.13-.948-3.5-.922-1.8.027-3.46 1.046-4.385 2.657-1.87 3.243-.477 8.043 1.347 10.677.89 1.292 1.95 2.741 3.34 2.689 1.34-.054 1.846-.866 3.466-.866 1.62 0 2.075.866 3.49.84 1.44-.027 2.355-1.317 3.236-2.614 1.02-1.5 1.44-2.955 1.466-3.03-.033-.014-2.81-1.078-2.836-4.261zM13.673 4.74c.74-.9 1.24-2.148 1.103-3.39-1.067.044-2.36.71-3.124 1.608-.685.795-1.286 2.068-1.124 3.286 1.19.092 2.407-.604 3.145-1.504z"/>
+          </svg>
+          Download for iOS
+        </a>
+      </div>
+    </div>
+    <div class="cta-art">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="phone-screen-img" style="background-image:url('assets/screen-home.png')"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ══════════════════ FOOTER ══════════════════ -->
+<footer class="foot">
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="#">
+          <span class="brand-mark">SS</span>
+          ShiftStack
+        </a>
+        <p class="foot-tagline">A cash-tip tracker for everyone whose paycheck doesn't fit on a paycheck.</p>
+        <div class="foot-stores">
+          <a class="btn-store" href="#">
+            <svg width="20" height="20" viewBox="0 0 20 24" fill="currentColor" aria-hidden="true">
+              <path d="M16.365 12.51c-.026-2.685 2.193-3.974 2.293-4.038-1.249-1.825-3.193-2.075-3.882-2.105-1.654-.167-3.227.973-4.067.973-.84 0-2.13-.948-3.5-.922-1.8.027-3.46 1.046-4.385 2.657-1.87 3.243-.477 8.043 1.347 10.677.89 1.292 1.95 2.741 3.34 2.689 1.34-.054 1.846-.866 3.466-.866 1.62 0 2.075.866 3.49.84 1.44-.027 2.355-1.317 3.236-2.614 1.02-1.5 1.44-2.955 1.466-3.03-.033-.014-2.81-1.078-2.836-4.261zM13.673 4.74c.74-.9 1.24-2.148 1.103-3.39-1.067.044-2.36.71-3.124 1.608-.685.795-1.286 2.068-1.124 3.286 1.19.092 2.407-.604 3.145-1.504z"/>
+            </svg>
+            <span class="store-label">
+              <span>Download on the</span>
+              <span>App Store</span>
+            </span>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h6>Product</h6>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#insights">Insights</a></li>
+          <li><a href="#grid">All features</a></li>
+          <li><a href="#">Changelog</a></li>
+        </ul>
+      </div>
+      <div>
+        <h6>Company</h6>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h6>Legal</h6>
+        <ul>
+          <li><a href="#">Help</a></li>
+          <li><a href="#">FAQ</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="terms.html">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 ShiftStack · Oakland, CA</span>
+      <span>Made by people who once worked the closing shift.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Smooth scroll for all nav anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href').slice(1);
+      if (!id) return;
+      const el = document.getElementById(id);
+      if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    });
+  });
+</script>
+</body>
+</html>
